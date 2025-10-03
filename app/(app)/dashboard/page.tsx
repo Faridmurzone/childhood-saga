@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [childId, setChildId] = useState<string | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   useEffect(() => {
     // Get selected child from localStorage
@@ -83,66 +84,132 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold">The Hero&apos;s Book</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold">The Hero&apos;s Book</h1>
           <p className="text-muted-foreground mt-2">
             {chapters.length} {chapters.length === 1 ? 'chapter' : 'chapters'} in the saga
           </p>
         </div>
-        <Link href="/new">
-          <Button size="lg">Forge New Chapter</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {chapters.length > 0 && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+          )}
+          <Link href="/new" className="flex-1 sm:flex-initial">
+            <Button size="lg" className="w-full sm:w-auto">Forge New Chapter</Button>
+          </Link>
+        </div>
       </div>
 
       {chapters.length > 0 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Filter by Theme</h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={selectedTheme === null ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => setSelectedTheme(null)}
-              >
-                All
-              </Badge>
-              {themes.map((theme) => (
+        <>
+          {/* Desktop Filters - Always visible */}
+          <div className="hidden md:block space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Filter by Theme</h3>
+              <div className="flex flex-wrap gap-2">
                 <Badge
-                  key={theme}
-                  variant={selectedTheme === theme ? 'default' : 'outline'}
+                  variant={selectedTheme === null ? 'default' : 'outline'}
                   className="cursor-pointer"
-                  onClick={() => setSelectedTheme(theme)}
+                  onClick={() => setSelectedTheme(null)}
                 >
-                  {theme}
+                  All
                 </Badge>
-              ))}
+                {themes.map((theme) => (
+                  <Badge
+                    key={theme}
+                    variant={selectedTheme === theme ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTheme(theme)}
+                  >
+                    {theme}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Filter by Tag</h3>
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  variant={selectedTag === null ? 'default' : 'outline'}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedTag(null)}
+                >
+                  All
+                </Badge>
+                {allTags.slice(0, 20).map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant={selectedTag === tag ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTag(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Filter by Tag</h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={selectedTag === null ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => setSelectedTag(null)}
-              >
-                All
-              </Badge>
-              {allTags.slice(0, 20).map((tag) => (
-                <Badge
-                  key={tag}
-                  variant={selectedTag === tag ? 'default' : 'outline'}
-                  className="cursor-pointer"
-                  onClick={() => setSelectedTag(tag)}
-                >
-                  {tag}
-                </Badge>
-              ))}
+          {/* Mobile Filters - Collapsible */}
+          {filtersOpen && (
+            <div className="md:hidden space-y-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 border">
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">Filter by Theme</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={selectedTheme === null ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTheme(null)}
+                  >
+                    All
+                  </Badge>
+                  {themes.map((theme) => (
+                    <Badge
+                      key={theme}
+                      variant={selectedTheme === theme ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedTheme(theme)}
+                    >
+                      {theme}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">Filter by Tag</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={selectedTag === null ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTag(null)}
+                  >
+                    All
+                  </Badge>
+                  {allTags.slice(0, 20).map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant={selectedTag === tag ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedTag(tag)}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
 
       <ConstellationGrid chapters={filteredChapters} />

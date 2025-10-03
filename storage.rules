@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the requesting user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User-specific folders: {userId}/genimg/*
+    // Users can only read/write files in their own folder
+    match /{userId}/genimg/{imageId} {
+      // Allow read if authenticated and accessing own folder
+      allow read: if isOwner(userId);
+
+      // Allow write (create/update/delete) if authenticated and accessing own folder
+      allow write: if isOwner(userId);
+    }
+
+    // Legacy chapters folder (if you have old images there)
+    // Make it read-only for now
+    match /chapters/{imageId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Disable writes to legacy folder
+    }
+
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

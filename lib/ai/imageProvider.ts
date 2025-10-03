@@ -1,6 +1,7 @@
 export interface GenerateImageParams {
   prompt: string
   theme: string
+  userId: string
 }
 
 export interface ImageGenerationResult {
@@ -12,7 +13,7 @@ export class ImageProvider {
   async generateImage(
     params: GenerateImageParams
   ): Promise<ImageGenerationResult> {
-    const { prompt, theme } = params
+    const { prompt, theme, userId } = params
 
     try {
       const response = await fetch('/api/generate-image', {
@@ -20,7 +21,7 @@ export class ImageProvider {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt, theme }),
+        body: JSON.stringify({ prompt, theme, userId }),
       })
 
       if (!response.ok) {

@@ -49,9 +49,17 @@ function LandingContent() {
 
   if (user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="max-w-2xl text-center space-y-8">
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col items-center">
+            <Image
+              src="/logo_bg.png"
+              alt="Childhood Saga"
+              width={200}
+              height={200}
+              className="object-contain rounded-full"
+              priority
+            />
             <h1 className="text-5xl font-bold tracking-tight">
               Childhood Saga
             </h1>

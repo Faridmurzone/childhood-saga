@@ -1,14 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
-import { adminStorage } from '@/lib/firebaseServer'
+import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+
+// Initialize Firebase Client SDK for storage uploads
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+}
+
+let app
+if (!getClientApps().length) {
+  app = initializeClientApp(firebaseConfig)
+} else {
+  app = getClientApps()[0]
+}
+
+const storage = getStorage(app)
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, theme } = await request.json()
+    const { prompt, theme, userId } = await request.json()
 
-    if (!prompt) {
+    if (!prompt || !userId) {
       return NextResponse.json(
-        { error: 'Missing prompt' },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
@@ -72,28 +92,15 @@ export async function POST(request: NextRequest) {
       throw new Error('No image data received from Gemini')
     }
 
-    // Upload to Firebase Storage using Admin SDK
-    if (!adminStorage) {
-      throw new Error('Firebase Admin Storage not initialized')
-    }
+    // Upload to Firebase Storage in user's folder: userId/genimg/
+    const fileName = `${userId}/genimg/${Date.now()}-${Math.random().toString(36).substring(7)}.png`
+    const storageRef = ref(storage, fileName)
 
-    const fileName = `chapters/${Date.now()}-${Math.random().toString(36).substring(7)}.png`
-    const bucket = adminStorage.bucket()
-    const file = bucket.file(fileName)
-
-    await file.save(imageBuffer, {
+    await uploadBytes(storageRef, imageBuffer, {
       contentType: 'image/png',
-      metadata: {
-        metadata: {
-          firebaseStorageDownloadTokens: Math.random().toString(36).substring(7),
-        },
-      },
     })
 
-    // Make the file publicly accessible
-    await file.makePublic()
-
-    const imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`
+    const imageUrl = await getDownloadURL(storageRef)
 
     return NextResponse.json({
       imageUrl,

@@ -66,6 +66,7 @@ export async function createChapterWithAI(
       const imageResult = await imageProvider.generateImage({
         prompt: `${input.theme}: ${mythResult.title}`,
         theme: input.theme,
+        userId,
       })
 
       // Update chapter with generated content

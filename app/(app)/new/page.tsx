@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createChapterWithAI } from '@/lib/chapterService'
+import { ForgingLoader } from '@/components/ForgingLoader'
 
 export default function NewChapterPage() {
   const router = useRouter()
@@ -58,65 +59,56 @@ export default function NewChapterPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">Forge a New Chapter</h1>
-        <p className="text-muted-foreground">
-          Choose a theme and describe a special moment
-        </p>
-      </div>
+    <>
+      {isForging && <ForgingLoader />}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Choose Your Theme</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ThemeChips selected={selectedTheme} onSelect={setSelectedTheme} />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Describe the Moment</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Textarea
-            placeholder="Tell me about a special moment today... (e.g., 'We splashed water in the patio')"
-            value={seedText}
-            onChange={(e) => setSeedText(e.target.value)}
-            rows={4}
-            maxLength={160}
-            className="resize-none"
-          />
-          <div className="text-xs text-muted-foreground text-right">
-            {seedText.length} / 160
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-center">
-        <Button
-          size="lg"
-          onClick={handleForge}
-          disabled={!canForge || isForging}
-          className="min-w-[200px]"
-        >
-          {isForging ? (
-            <span className="flex items-center gap-2">
-              <span className="shimmer">Forging...</span>
-            </span>
-          ) : (
-            'Forge Chapter'
-          )}
-        </Button>
-      </div>
-
-      {isForging && (
-        <div className="text-center text-sm text-muted-foreground">
-          <p>Weaving your mythic tale with Claude Sonnet...</p>
-          <p className="mt-1">This may take a moment</p>
+      <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-bold">Forge a New Chapter</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Describe a special moment and choose a theme
+          </p>
         </div>
-      )}
-    </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Describe the Moment</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="Tell me about a special moment today... (e.g., 'We splashed water in the patio')"
+              value={seedText}
+              onChange={(e) => setSeedText(e.target.value)}
+              rows={4}
+              maxLength={160}
+              className="resize-none"
+            />
+            <div className="text-xs text-muted-foreground text-right">
+              {seedText.length} / 160
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Choose Your Theme</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ThemeChips selected={selectedTheme} onSelect={setSelectedTheme} />
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-center">
+          <Button
+            size="lg"
+            onClick={handleForge}
+            disabled={!canForge || isForging}
+            className="w-full sm:w-auto sm:min-w-[200px]"
+          >
+            Forge Chapter
+          </Button>
+        </div>
+      </div>
+    </>
   )
 }
