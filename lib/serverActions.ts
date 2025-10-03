@@ -64,6 +64,7 @@ export async function createChapter(
       seedText: input.seedText,
       theme: input.theme,
       childAgeMonths,
+      childName: childData.name,
     })
 
     // Generate image
