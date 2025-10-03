@@ -1,15 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import Image from 'next/image'
+import { Menu, X } from 'lucide-react'
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth()
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -31,12 +32,14 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard">
-            <h1 className="text-2xl font-bold">Childhood Saga</h1>
+            <h1 className="text-xl sm:text-2xl font-bold">Childhood Saga</h1>
           </Link>
-          <nav className="flex items-center gap-4">
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-4">
             <Link href="/new">
               <Button variant="default">Forge New Chapter</Button>
             </Link>
@@ -47,7 +50,48 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               Sign Out
             </Button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-white/95 backdrop-blur-sm">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
+              <Link href="/new" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="default" className="w-full">
+                  Forge New Chapter
+                </Button>
+              </Link>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full">
+                  Hero&apos;s Book
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => {
+                  signOut()
+                  setMobileMenuOpen(false)
+                }}
+              >
+                Sign Out
+              </Button>
+            </nav>
+          </div>
+        )}
       </header>
       <main className="container mx-auto px-4 py-8">{children}</main>
     </div>

@@ -8,6 +8,7 @@ import { ConstellationGrid } from '@/components/ConstellationGrid'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import { Filter } from 'lucide-react'
 
 export default function DashboardPage() {
   const { user } = useAuth()
