@@ -14,20 +14,23 @@ service firebase.storage {
     }
 
     // User-specific folders: {userId}/genimg/*
-    // Users can only read/write files in their own folder
     match /{userId}/genimg/{imageId} {
-      // Allow read if authenticated and accessing own folder
-      allow read: if isOwner(userId);
+      // Allow read if:
+      // 1. Authenticated user accessing their own folder, OR
+      // 2. Public read for generated images (needed for display)
+      allow read: if true;
 
-      // Allow write (create/update/delete) if authenticated and accessing own folder
-      allow write: if isOwner(userId);
+      // Allow write if:
+      // 1. Authenticated user accessing their own folder, OR
+      // 2. Server-side write (request.auth == null means server/admin)
+      allow write: if isOwner(userId) || request.auth == null;
     }
 
     // Legacy chapters folder (if you have old images there)
     // Make it read-only for now
     match /chapters/{imageId} {
-      allow read: if isAuthenticated();
-      allow write: if false; // Disable writes to legacy folder
+      allow read: if true;
+      allow write: if request.auth == null; // Allow server writes
     }
 
     // Deny all other access by default
