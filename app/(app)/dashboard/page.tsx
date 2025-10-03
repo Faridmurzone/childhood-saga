@@ -30,7 +30,10 @@ export default function DashboardPage() {
   }, [childId, user])
 
   const loadChapters = async () => {
-    if (!user || !childId) return
+    if (!user || !childId) {
+      console.log('Cannot load chapters:', { user: !!user, childId })
+      return
+    }
 
     try {
       setLoading(true)

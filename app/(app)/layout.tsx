@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Image from 'next/image'
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth()
@@ -29,8 +30,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
+    <div className="min-h-screen">
+      <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard">
             <h1 className="text-2xl font-bold">Childhood Saga</h1>

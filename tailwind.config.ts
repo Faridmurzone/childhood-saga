@@ -18,6 +18,16 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Paleta "Aventura Brillante" para Toddlers
+        'sky-bright': '#5BC0EB',      // Azul Cielo Alegre - fondos, botones de navegación
+        'cherry-vibrant': '#FF6B6B',  // Rojo Cereza Vibrante - CTAs, indicadores
+        'sun-radiant': '#FFE66D',     // Amarillo Sol Radiante - acentos, fondos claros
+        'apple-fresh': '#6BFF6B',     // Verde Manzana Fresca - elementos naturales, respuestas correctas
+        'peach-orange': '#FFB06B',    // Naranja Melocotón - interactivos con calidez
+        'violet-gummy': '#B28EEB',    // Violeta Gominola - fondos mágicos/creativos
+        'cloud-soft': '#F7F7F7',      // Blanco Nube Suave - fondo principal
+        'slate-friendly': '#333333',  // Gris Pizarra Amigable - texto principal
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

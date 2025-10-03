@@ -59,6 +59,7 @@ export async function createChapterWithAI(
         seedText: input.seedText,
         theme: input.theme,
         childAgeMonths,
+        childName: childData.name,
       })
 
       // Generate image

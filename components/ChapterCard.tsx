@@ -34,11 +34,14 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {new Date(chapter.createdAt as any).toLocaleDateString('es-AR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {chapter.createdAt?.toDate ?
+              chapter.createdAt.toDate().toLocaleDateString('es-AR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }) :
+              'Fecha no disponible'
+            }
           </p>
         </CardContent>
       </Card>

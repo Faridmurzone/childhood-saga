@@ -1,0 +1,84 @@
+import { NextRequest, NextResponse } from 'next/server'
+import Anthropic from '@anthropic-ai/sdk'
+
+const SYSTEM_PROMPT = `You are a gentle myth-weaver for toddlers (ages 2–4).
+Write in warm, simple Rioplatense Spanish, 150–300 words, with cozy wonder.
+Avoid fear, violence, or harsh conflict. Keep imagery concrete and kind.`
+
+export async function POST(request: NextRequest) {
+  try {
+    const { seedText, theme, childAgeMonths, childName } = await request.json()
+
+    if (!seedText || !theme || !childName) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY
+
+    if (!apiKey) {
+      console.warn('⚠️  ANTHROPIC_API_KEY not found. Using mock response.')
+      return NextResponse.json({
+        title: 'La Aventura del Jardín Mágico',
+        story:
+          'Había una vez un pequeño héroe que descubrió un jardín lleno de flores que cantaban. Cada flor tenía una voz diferente: algunas sonaban como campanitas, otras como pajaritos felices. El pequeño héroe caminó entre las flores, escuchando sus canciones. Una rosa rosada le contó sobre el arcoíris que vive en las gotas de agua. Un girasol amarillo le mostró cómo seguir al sol durante el día. Y una violeta tímida le susurró secretos sobre las estrellas de la noche. El pequeño héroe se sentó en el pasto suave y verde, rodeado de sus nuevas amigas las flores. Juntos, crearon una sinfonía de colores y sonidos que llenó el jardín de alegría. Cuando llegó la hora de volver a casa, las flores le prometieron que siempre estarían allí, esperando para cantar con él otra vez.',
+        tags: ['Jardín', 'Flores', 'Música', 'Alegría', theme],
+      })
+    }
+
+    const client = new Anthropic({ apiKey })
+
+    const userPrompt = `Seed: "${seedText}"
+Theme: "${theme}"
+ChildName: "${childName}"
+AgeMonths: ${childAgeMonths || 36}
+
+Write JSON only, using the child's name "${childName}" as the protagonist:
+{
+  "title": "<short poetic title>",
+  "story": "<single-paragraph story in Spanish featuring ${childName}>",
+  "tags": ["<1-4 simple tags>"]
+}`
+
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: userPrompt,
+        },
+      ],
+    })
+
+    // Extract text content from response
+    const content = message.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    // Parse the JSON response
+    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error('Could not extract JSON from response')
+    }
+
+    const result = JSON.parse(jsonMatch[0])
+
+    // Validate the response
+    if (!result.title || !result.story || !Array.isArray(result.tags)) {
+      throw new Error('Invalid response format from Claude')
+    }
+
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Error generating myth with Claude:', error)
+    return NextResponse.json(
+      { error: 'Failed to generate myth' },
+      { status: 500 }
+    )
+  }
+}

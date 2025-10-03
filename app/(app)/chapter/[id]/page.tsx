@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
 import { Share2 } from 'lucide-react'
+import { getThemeBackground } from '@/lib/themeBackgrounds'
+import { StoryText } from '@/components/StoryText'
 
 export default function ChapterDetailPage() {
   const params = useParams()
@@ -20,6 +22,19 @@ export default function ChapterDetailPage() {
   useEffect(() => {
     loadChapter()
   }, [params.id, user])
+
+  useEffect(() => {
+    // Set background based on chapter theme
+    if (chapter) {
+      const backgroundUrl = getThemeBackground(chapter.theme)
+      document.body.style.backgroundImage = `url(${backgroundUrl})`
+    }
+
+    // Cleanup: restore default background when unmounting
+    return () => {
+      document.body.style.backgroundImage = 'url(/assets/default.png)'
+    }
+  }, [chapter])
 
   const loadChapter = async () => {
     if (!user || !params.id) return
@@ -67,9 +82,9 @@ export default function ChapterDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between bg-white/90 backdrop-blur-md rounded-lg p-6 shadow-lg border border-white/20">
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold">{chapter.mythTitle}</h1>
+          <h1 className="text-4xl font-bold text-slate-friendly">{chapter.mythTitle}</h1>
           <div className="flex flex-wrap gap-2">
             {chapter.tags.map((tag, i) => (
               <Badge key={i} variant="secondary">
@@ -77,12 +92,15 @@ export default function ChapterDetailPage() {
               </Badge>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {new Date(chapter.createdAt as any).toLocaleDateString('es-AR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+          <p className="text-sm text-slate-friendly/70">
+            {chapter.createdAt?.toDate ?
+              chapter.createdAt.toDate().toLocaleDateString('es-AR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }) :
+              'Fecha no disponible'
+            }
           </p>
         </div>
         <Button variant="outline" size="icon" onClick={handleShare}>
@@ -90,7 +108,7 @@ export default function ChapterDetailPage() {
         </Button>
       </div>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-white/90 backdrop-blur-md border-white/20">
         <div className="relative aspect-[16/9] w-full">
           <Image
             src={chapter.imageUrl}
@@ -102,17 +120,13 @@ export default function ChapterDetailPage() {
         </div>
       </Card>
 
-      <Card className="p-8">
-        <div className="prose prose-lg max-w-none">
-          <p className="text-lg leading-relaxed whitespace-pre-wrap">
-            {chapter.mythText}
-          </p>
-        </div>
+      <Card className="p-8 bg-white/90 backdrop-blur-md border-white/20">
+        <StoryText text={chapter.mythText} staggerMs={100} />
       </Card>
 
-      <div className="text-center text-sm text-muted-foreground">
-        <p>Seed: &quot;{chapter.seedText}&quot;</p>
-        <p className="mt-1">Theme: {chapter.theme}</p>
+      <div className="text-center text-sm bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <p className="text-slate-friendly/70">Seed: &quot;{chapter.seedText}&quot;</p>
+        <p className="mt-1 text-slate-friendly/70">Theme: {chapter.theme}</p>
       </div>
     </div>
   )

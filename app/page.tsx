@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import Image from 'next/image'
 
 function LandingContent() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth()
@@ -81,9 +82,17 @@ function LandingContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 flex flex-col items-center">
+          <Image
+            src="/logo_bg.png"
+            alt="Childhood Saga"
+            width={200}
+            height={200}
+            className="object-contain rounded-full"
+            priority
+          />
           <h1 className="text-4xl font-bold tracking-tight">
             Childhood Saga
           </h1>
