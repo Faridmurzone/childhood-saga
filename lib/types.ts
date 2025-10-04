@@ -12,6 +12,9 @@ export interface Child {
   userId: string
   name: string
   birthDate?: string
+  description?: string
+  context?: string
+  avatarUrl?: string
   createdAt: FirestoreTimestamp
 }
 

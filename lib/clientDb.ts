@@ -37,6 +37,9 @@ export async function upsertChildClient(
     await updateDoc(childRef, {
       name: child.name,
       birthDate: child.birthDate,
+      description: child.description,
+      context: child.context,
+      avatarUrl: child.avatarUrl,
     })
 
     const childDoc = await getDoc(childRef)
@@ -50,6 +53,9 @@ export async function upsertChildClient(
       userId,
       name: child.name,
       birthDate: child.birthDate,
+      description: child.description,
+      context: child.context,
+      avatarUrl: child.avatarUrl,
       createdAt: Timestamp.now(),
     })
 
@@ -58,6 +64,9 @@ export async function upsertChildClient(
       userId,
       name: child.name,
       birthDate: child.birthDate,
+      description: child.description,
+      context: child.context,
+      avatarUrl: child.avatarUrl,
       createdAt: Timestamp.now() as any,
     }
   }

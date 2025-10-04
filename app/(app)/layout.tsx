@@ -6,17 +6,30 @@ import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
+import { HeaderChildSelector } from '@/components/HeaderChildSelector'
+import { Child } from '@/lib/types'
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedChild, setSelectedChild] = useState<Child | null>(null)
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/')
     }
   }, [user, loading, router])
+
+  const handleChildSelected = (child: Child, shouldReload: boolean = false) => {
+    setSelectedChild(child)
+    localStorage.setItem('selectedChildId', child.id)
+
+    // Only reload if explicitly requested (from user clicking dropdown)
+    if (shouldReload && selectedChild?.id !== child.id) {
+      window.location.reload()
+    }
+  }
 
   if (loading) {
     return (
@@ -34,15 +47,24 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard">
-            <h1 className="text-xl sm:text-2xl font-bold">Childhood Saga</h1>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard">
+              <h1 className="text-xl sm:text-2xl font-bold">Childhood Saga</h1>
+            </Link>
+
+            {/* Desktop: Forge New Chapter on the left */}
+            <Link href="/new" className="hidden md:block">
+              <Button variant="default">Forge New Chapter</Button>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
-            <Link href="/new">
-              <Button variant="default">Forge New Chapter</Button>
-            </Link>
+            <HeaderChildSelector
+              selectedChild={selectedChild}
+              onChildSelected={handleChildSelected}
+              onAddNewChild={() => router.push('/child')}
+            />
             <Link href="/dashboard">
               <Button variant="ghost">Hero&apos;s Book</Button>
             </Link>
@@ -51,18 +73,25 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             </Button>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile: Child Selector and Menu Button */}
+          <div className="md:hidden flex items-center gap-2">
+            <HeaderChildSelector
+              selectedChild={selectedChild}
+              onChildSelected={handleChildSelected}
+              onAddNewChild={() => router.push('/child')}
+            />
+            <button
+              className="p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -93,6 +122,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </header>
+
       <main className="container mx-auto px-4 py-8">{children}</main>
     </div>
   )

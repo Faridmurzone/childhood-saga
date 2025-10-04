@@ -7,7 +7,7 @@ Avoid fear, violence, or harsh conflict. Keep imagery concrete and kind.`
 
 export async function POST(request: NextRequest) {
   try {
-    const { seedText, theme, childAgeMonths, childName } = await request.json()
+    const { seedText, theme, childAgeMonths, childName, childDescription, childContext } = await request.json()
 
     if (!seedText || !theme || !childName) {
       return NextResponse.json(
@@ -30,10 +30,22 @@ export async function POST(request: NextRequest) {
 
     const client = new Anthropic({ apiKey })
 
+    // Build context disclaimer if provided
+    let contextDisclaimer = ''
+    if (childContext) {
+      contextDisclaimer = `\n\nIMPORTANT CONTEXT (for consistency, do not explicitly mention in story unless relevant): ${childContext}`
+    }
+
+    // Build description if provided
+    let descriptionText = ''
+    if (childDescription) {
+      descriptionText = `\nChild Description: ${childDescription}`
+    }
+
     const userPrompt = `Seed: "${seedText}"
 Theme: "${theme}"
 ChildName: "${childName}"
-AgeMonths: ${childAgeMonths || 36}
+AgeMonths: ${childAgeMonths || 36}${descriptionText}${contextDisclaimer}
 
 Write JSON only, using the child's name "${childName}" as the protagonist:
 {

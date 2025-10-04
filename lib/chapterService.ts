@@ -60,6 +60,8 @@ export async function createChapterWithAI(
         theme: input.theme,
         childAgeMonths,
         childName: childData.name,
+        childDescription: childData.description,
+        childContext: childData.context,
       })
 
       // Generate image
@@ -67,6 +69,7 @@ export async function createChapterWithAI(
         prompt: `${input.theme}: ${mythResult.title}`,
         theme: input.theme,
         userId,
+        avatarUrl: childData.avatarUrl,
       })
 
       // Update chapter with generated content

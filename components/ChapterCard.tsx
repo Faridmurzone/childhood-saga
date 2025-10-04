@@ -1,10 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Chapter } from '@/lib/types'
+import { ChapterImage } from './ChapterImage'
 
 interface ChapterCardProps {
   chapter: Chapter
@@ -15,11 +15,12 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
     <Link href={`/chapter/${chapter.id}`}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-          <Image
+          <ChapterImage
             src={chapter.imageUrl}
             alt={chapter.mythTitle}
+            theme={chapter.theme}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
+            className="transition-transform group-hover:scale-105"
           />
         </div>
         <CardContent className="p-4">

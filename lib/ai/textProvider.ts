@@ -9,11 +9,13 @@ export interface GenerateMythParams {
   theme: string
   childAgeMonths: number
   childName: string
+  childDescription?: string
+  childContext?: string
 }
 
 export class TextProvider {
   async generateMyth(params: GenerateMythParams): Promise<MythGenerationResult> {
-    const { seedText, theme, childAgeMonths, childName } = params
+    const { seedText, theme, childAgeMonths, childName, childDescription, childContext } = params
 
     try {
       const response = await fetch('/api/generate-myth', {
@@ -21,7 +23,14 @@ export class TextProvider {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ seedText, theme, childAgeMonths, childName }),
+        body: JSON.stringify({
+          seedText,
+          theme,
+          childAgeMonths,
+          childName,
+          childDescription,
+          childContext
+        }),
       })
 
       if (!response.ok) {

@@ -8,10 +8,10 @@ import { Chapter } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import Image from 'next/image'
 import { Share2 } from 'lucide-react'
 import { getThemeBackground } from '@/lib/themeBackgrounds'
 import { StoryText } from '@/components/StoryText'
+import { ChapterImage } from '@/components/ChapterImage'
 
 export default function ChapterDetailPage() {
   const params = useParams()
@@ -110,11 +110,11 @@ export default function ChapterDetailPage() {
 
       <Card className="overflow-hidden bg-white/90 backdrop-blur-md border-white/20">
         <div className="relative aspect-[16/9] w-full">
-          <Image
+          <ChapterImage
             src={chapter.imageUrl}
             alt={chapter.mythTitle}
+            theme={chapter.theme}
             fill
-            className="object-cover"
             priority
           />
         </div>

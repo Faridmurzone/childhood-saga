@@ -24,7 +24,7 @@ const storage = getStorage(app)
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, theme, userId } = await request.json()
+    const { prompt, theme, userId, avatarUrl } = await request.json()
 
     if (!prompt || !userId) {
       return NextResponse.json(
@@ -54,18 +54,61 @@ export async function POST(request: NextRequest) {
     const model = 'gemini-2.5-flash-image'
 
     // Enhanced prompt for toddler-friendly, colorful, whimsical illustrations
-    const enhancedPrompt = `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children.`
+    const enhancedPrompt = avatarUrl
+      ? `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. USE THE PROVIDED REFERENCE IMAGE to depict the child character faithfully in the illustration. The character should match the appearance shown in the reference image. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children.`
+      : `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children.`
 
-    const contents = [
-      {
-        role: 'user',
-        parts: [
+    let contents: any[] = []
+
+    // If avatar is provided, fetch it and include as reference image
+    if (avatarUrl) {
+      try {
+        const avatarResponse = await fetch(avatarUrl)
+        const avatarBuffer = await avatarResponse.arrayBuffer()
+        const avatarBase64 = Buffer.from(avatarBuffer).toString('base64')
+
+        contents = [
           {
-            text: enhancedPrompt,
+            role: 'user',
+            parts: [
+              {
+                text: enhancedPrompt,
+              },
+              {
+                inlineData: {
+                  mimeType: 'image/png',
+                  data: avatarBase64,
+                },
+              },
+            ],
           },
-        ],
-      },
-    ]
+        ]
+      } catch (error) {
+        console.error('Error fetching avatar for reference:', error)
+        // Fall back to text-only prompt
+        contents = [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: enhancedPrompt,
+              },
+            ],
+          },
+        ]
+      }
+    } else {
+      contents = [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: enhancedPrompt,
+            },
+          ],
+        },
+      ]
+    }
 
     const response = await ai.models.generateContentStream({
       model,
