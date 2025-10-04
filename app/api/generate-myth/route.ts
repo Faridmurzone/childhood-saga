@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 
-const SYSTEM_PROMPT = `You are a gentle myth-weaver for toddlers (ages 2–4).
-Write in warm, simple Rioplatense Spanish, 150–300 words, with cozy wonder.
-Avoid fear, violence, or harsh conflict. Keep imagery concrete and kind.`
+const SYSTEM_PROMPT = `
+  You are a gentle storyteller for toddlers (ages 2–4).
+  Write in warm, simple English, between 150–300 words, filled with cozy wonder.
+  Avoid fear, violence, or harsh conflict. Use concrete, kind, and imaginative imagery.
+  Stories should feel calm, safe, and magical—like bedtime tales full of love and curiosity.
+`
 
 export async function POST(request: NextRequest) {
   try {
