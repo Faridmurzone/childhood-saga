@@ -303,7 +303,7 @@ export function ChildSelector({
                     className="cursor-pointer"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    We'll create an avatar from this photo
+                  {"We'll create an avatar from this photo"}
                   </p>
                 </div>
               </div>
