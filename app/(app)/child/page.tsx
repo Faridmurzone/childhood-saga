@@ -145,19 +145,20 @@ export default function ChildManagementPage() {
       // Update local state
       if (editingChild) {
         setChildren(children.map(c => c.id === savedChild.id ? savedChild : c))
+        // Just close form if editing
+        setShowForm(false)
+        setEditingChild(null)
+        setName('')
+        setBirthDate('')
+        setDescription('')
+        setContext('')
+        setPhoto(null)
+        setPhotoPreview(null)
       } else {
-        setChildren([...children, savedChild])
+        // If creating new child, save to localStorage and redirect
+        localStorage.setItem('selectedChildId', savedChild.id)
+        window.location.href = '/new'
       }
-
-      // Reset form
-      setShowForm(false)
-      setEditingChild(null)
-      setName('')
-      setBirthDate('')
-      setDescription('')
-      setContext('')
-      setPhoto(null)
-      setPhotoPreview(null)
     } catch (error) {
       console.error('Error saving child:', error)
       alert('Failed to save child profile. Please try again.')
