@@ -3,6 +3,9 @@ import { adminAuth } from '@/lib/firestore'
 import { createChapter, listChapters } from '@/lib/serverActions'
 import { CreateChapterInput, ListChaptersParams } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   try {
     const authHeader = request.headers.get('authorization')

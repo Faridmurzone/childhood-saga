@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 
+export const dynamic = 'force-dynamic'
+
 const SYSTEM_PROMPT = `
   You are a gentle storyteller for toddlers (ages 2–4).
   Write in warm, simple English, between 150–300 words, filled with cozy wonder.

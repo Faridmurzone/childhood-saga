@@ -7,14 +7,22 @@ if (!getApps().length) {
 
   // For development, we can use Application Default Credentials or service account
   // In production, set GOOGLE_APPLICATION_CREDENTIALS environment variable
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    const serviceAccount = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-    )
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      projectId,
-    })
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY && process.env.FIREBASE_SERVICE_ACCOUNT_KEY.trim()) {
+    try {
+      const serviceAccount = JSON.parse(
+        process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+      )
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId,
+      })
+    } catch (error) {
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:', error)
+      // Fallback to default initialization
+      admin.initializeApp({
+        projectId,
+      })
+    }
   } else {
     // For local development without service account
     // Uses emulator or requires gcloud auth

@@ -21,7 +21,9 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router])
 
-  const handleChildSelected = (child: Child, shouldReload: boolean = false) => {
+  const handleChildSelected = (child: Child | null, shouldReload: boolean = false) => {
+    if (!child) return
+
     setSelectedChild(child)
     localStorage.setItem('selectedChildId', child.id)
 

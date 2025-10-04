@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminAuth } from '@/lib/firestore'
 import { getChapter } from '@/lib/serverActions'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   try {
     const authHeader = request.headers.get('authorization')

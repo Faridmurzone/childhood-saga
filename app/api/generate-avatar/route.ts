@@ -3,6 +3,8 @@ import { GoogleGenAI } from '@google/genai'
 import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
+export const dynamic = 'force-dynamic'
+
 // Initialize Firebase Client SDK for storage uploads
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

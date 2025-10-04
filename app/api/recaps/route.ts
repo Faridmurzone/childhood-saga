@@ -3,6 +3,9 @@ import { adminAuth } from '@/lib/firestore'
 import { listRecap } from '@/lib/serverActions'
 import { RecapParams } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   try {
     const authHeader = request.headers.get('authorization')
