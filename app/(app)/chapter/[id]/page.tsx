@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
-import { getChapterClient } from '@/lib/clientDb'
+import { getChapterClient, updateChapterClient } from '@/lib/clientDb'
 import { Chapter } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Share2 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Share2, Pen, X } from 'lucide-react'
 import { getThemeBackground } from '@/lib/themeBackgrounds'
 import { StoryText } from '@/components/StoryText'
 import { ChapterImage } from '@/components/ChapterImage'
@@ -18,6 +20,10 @@ export default function ChapterDetailPage() {
   const { user } = useAuth()
   const [chapter, setChapter] = useState<Chapter | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editTitle, setEditTitle] = useState('')
+  const [editStory, setEditStory] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     loadChapter()
@@ -64,6 +70,40 @@ export default function ChapterDetailPage() {
     }
   }
 
+  const handleEdit = () => {
+    if (chapter) {
+      setEditTitle(chapter.mythTitle)
+      setEditStory(chapter.mythText)
+      setIsEditModalOpen(true)
+    }
+  }
+
+  const handleSaveEdit = async () => {
+    if (!chapter || !editTitle.trim() || !editStory.trim()) return
+
+    try {
+      setSaving(true)
+      await updateChapterClient(chapter.id, {
+        mythTitle: editTitle.trim(),
+        mythText: editStory.trim(),
+      })
+
+      // Update local state immediately
+      setChapter({
+        ...chapter,
+        mythTitle: editTitle.trim(),
+        mythText: editStory.trim(),
+      })
+
+      setIsEditModalOpen(false)
+    } catch (error) {
+      console.error('Error updating chapter:', error)
+      alert('Failed to update chapter. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -103,9 +143,14 @@ export default function ChapterDetailPage() {
             }
           </p>
         </div>
-        <Button variant="outline" size="icon" onClick={handleShare}>
-          <Share2 className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon" onClick={handleEdit}>
+            <Pen className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleShare}>
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <Card className="overflow-hidden bg-white/90 backdrop-blur-md border-white/20">
@@ -128,6 +173,68 @@ export default function ChapterDetailPage() {
         <p className="text-slate-friendly/70">Seed: &quot;{chapter.seedText}&quot;</p>
         <p className="mt-1 text-slate-friendly/70">Theme: {chapter.theme}</p>
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Edit Chapter</h2>
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="p-2 hover:bg-accent rounded-lg transition-colors"
+                  disabled={saving}
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1 block">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="Chapter title"
+                  disabled={saving}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1 block">
+                  Story <span className="text-red-500">*</span>
+                </label>
+                <Textarea
+                  value={editStory}
+                  onChange={(e) => setEditStory(e.target.value)}
+                  placeholder="Chapter story"
+                  rows={12}
+                  disabled={saving}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={handleSaveEdit}
+                  disabled={!editTitle.trim() || !editStory.trim() || saving}
+                  className="flex-1"
+                >
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditModalOpen(false)}
+                  disabled={saving}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -59,7 +59,10 @@ export default function ChildManagementPage() {
     }
   }
 
-  const handleEdit = (child: Child) => {
+  const handleEdit = (child: Child, e?: React.MouseEvent) => {
+    // Stop event propagation to prevent card click
+    e?.stopPropagation()
+
     setEditingChild(child)
     setName(child.name)
     setBirthDate(child.birthDate || '')
@@ -67,6 +70,12 @@ export default function ChildManagementPage() {
     setContext(child.context || '')
     setPhotoPreview(child.avatarUrl || null)
     setShowForm(true)
+  }
+
+  const handleSelectChild = (child: Child) => {
+    // Save to localStorage and reload to update header
+    localStorage.setItem('selectedChildId', child.id)
+    window.location.href = '/new'
   }
 
   const handleAddNew = () => {
@@ -193,11 +202,14 @@ export default function ChildManagementPage() {
               <Card
                 key={child.id}
                 className="group cursor-pointer transition-all hover:shadow-lg relative"
-                onClick={() => handleEdit(child)}
+                onClick={() => handleSelectChild(child)}
               >
                 {/* Edit icon on hover */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <div className="bg-primary text-white p-2 rounded-full shadow-lg">
+                <div
+                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  onClick={(e) => handleEdit(child, e)}
+                >
+                  <div className="bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary/90 transition-colors">
                     <Pen className="h-4 w-4" />
                   </div>
                 </div>

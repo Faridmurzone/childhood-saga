@@ -128,8 +128,18 @@ Style: Colorful digital illustration, whimsical, suitable for children's storybo
       throw new Error('No image data received from Gemini')
     }
 
-    // Upload to Firebase Storage in user's avatar folder: userId/avatar/avatar.png
-    const fileName = `${userId}/avatar/avatar.png`
+    // Upload to Firebase Storage with timestamp to avoid overwriting
+    // Format: YYMMDDHHmmSS_childname_avatar.png
+    const now = new Date()
+    const timestamp = now.getFullYear().toString().slice(-2) +
+      (now.getMonth() + 1).toString().padStart(2, '0') +
+      now.getDate().toString().padStart(2, '0') +
+      now.getHours().toString().padStart(2, '0') +
+      now.getMinutes().toString().padStart(2, '0') +
+      now.getSeconds().toString().padStart(2, '0')
+
+    const sanitizedName = childName.toLowerCase().replace(/[^a-z0-9]/g, '')
+    const fileName = `${userId}/avatar/${timestamp}_${sanitizedName}_avatar.png`
     const storageRef = ref(storage, fileName)
 
     await uploadBytes(storageRef, imageBuffer, {
