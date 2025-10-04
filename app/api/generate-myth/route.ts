@@ -24,13 +24,11 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.ANTHROPIC_API_KEY
 
     if (!apiKey) {
-      console.warn('⚠️  ANTHROPIC_API_KEY not found. Using mock response.')
-      return NextResponse.json({
-        title: 'La Aventura del Jardín Mágico',
-        story:
-          'Había una vez un pequeño héroe que descubrió un jardín lleno de flores que cantaban. Cada flor tenía una voz diferente: algunas sonaban como campanitas, otras como pajaritos felices. El pequeño héroe caminó entre las flores, escuchando sus canciones. Una rosa rosada le contó sobre el arcoíris que vive en las gotas de agua. Un girasol amarillo le mostró cómo seguir al sol durante el día. Y una violeta tímida le susurró secretos sobre las estrellas de la noche. El pequeño héroe se sentó en el pasto suave y verde, rodeado de sus nuevas amigas las flores. Juntos, crearon una sinfonía de colores y sonidos que llenó el jardín de alegría. Cuando llegó la hora de volver a casa, las flores le prometieron que siempre estarían allí, esperando para cantar con él otra vez.',
-        tags: ['Jardín', 'Flores', 'Música', 'Alegría', theme],
-      })
+      console.error('⚠️  ANTHROPIC_API_KEY not found.')
+      return NextResponse.json(
+        { error: 'ANTHROPIC_API_KEY not configured' },
+        { status: 500 }
+      )
     }
 
     const client = new Anthropic({ apiKey })

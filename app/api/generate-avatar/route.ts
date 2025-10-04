@@ -43,11 +43,11 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.GOOGLE_API_KEY
 
     if (!apiKey) {
-      console.warn('⚠️  GOOGLE_API_KEY not found.')
-      return NextResponse.json({
-        avatarUrl: 'https://api.dicebear.com/7.x/bottts/png?seed=' + childName,
-        providerMeta: { provider: 'fallback' },
-      })
+      console.error('⚠️  GOOGLE_API_KEY not found.')
+      return NextResponse.json(
+        { error: 'GOOGLE_API_KEY not configured' },
+        { status: 500 }
+      )
     }
 
     const ai = new GoogleGenAI({ apiKey })

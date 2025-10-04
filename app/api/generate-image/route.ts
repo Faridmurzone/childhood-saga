@@ -38,11 +38,11 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.GOOGLE_API_KEY
 
     if (!apiKey) {
-      console.warn('⚠️  GOOGLE_API_KEY not found. Using placeholder image.')
-      return NextResponse.json({
-        imageUrl: 'https://placehold.co/800x600/png?text=Chapter+Image',
-        providerMeta: { provider: 'placeholder' },
-      })
+      console.error('⚠️  GOOGLE_API_KEY not found.')
+      return NextResponse.json(
+        { error: 'GOOGLE_API_KEY not configured' },
+        { status: 500 }
+      )
     }
 
     const ai = new GoogleGenAI({
