@@ -5,7 +5,7 @@ Transform daily moments with your 2-4 year-old into mythic story chapters. Built
 ## Features
 
 - 🎨 **14 Magical Themes**: Fantasy, Epic, Space Adventure, Forest Friends, Ocean Wonders, Dinosaur Time, Kind Robots, Magic School, Fairy Garden, Friendly Monsters, Pirate Islands, Snowy World, City Explorers, Cozy Bedtime
-- ✨ **AI-Powered Storytelling**: Claude Sonnet generates age-appropriate stories in warm Rioplatense Spanish
+- ✨ **AI-Powered Storytelling**: Claude Sonnet generates age-appropriate stories in warm English
 - 📚 **The Hero's Book**: Constellation-like gallery of all your mythic chapters
 - 🔐 **Secure Authentication**: Firebase Auth with Email/Password and Google sign-in
 - 📱 **Responsive Design**: Beautiful UI built with TailwindCSS and shadcn/ui
@@ -174,7 +174,7 @@ npm start
 
 The app includes mock fallbacks for development without API keys:
 
-- **Text Generation**: Returns pre-written Spanish stories if `ANTHROPIC_API_KEY` is not set
+- **Text Generation**: Returns pre-written English stories if `ANTHROPIC_API_KEY` is not set
 - **Image Generation**: Returns placeholder images from Unsplash if `GOOGLE_API_KEY` is not set
 
 This allows you to test the full user flow without configuring API providers.
@@ -273,7 +273,7 @@ childhood-saga/
 
 The Claude Sonnet prompt follows these guidelines:
 
-- **Language**: Rioplatense Spanish
+- **Language**: Simple English
 - **Age**: 2-4 years old
 - **Tone**: Warm, gentle, cozy wonder
 - **Length**: 150-300 words

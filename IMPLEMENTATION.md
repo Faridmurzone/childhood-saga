@@ -12,7 +12,7 @@
 ### AI Integration
 - ✅ Claude Sonnet 4 text generation
   - Age-aware prompts (2-4 years)
-  - Rioplatense Spanish output
+  - Rioplatense English output
   - 150-300 word stories
   - Mock fallback when no API key
 - ✅ Image provider stub (ready for Gemini integration)
@@ -80,7 +80,7 @@ chapters/{chapterId} {
   seedText: string
   createdAt: Timestamp
   mythTitle: string
-  mythText: string (Spanish)
+  mythText: string (English)
   tags: string[]
   imageUrl: string
   providerMeta: { text, image }
@@ -129,8 +129,8 @@ chapters/{chapterId} {
 - AI generation pipeline working
 
 ✅ **3. Chapter view**
-- Spanish title from Claude Sonnet
-- 150-300 word Spanish story
+- English title from Claude Sonnet
+- 150-300 word English story
 - Generated/placeholder illustration
 - Tags displayed as badges
 - Creation date shown
@@ -168,7 +168,7 @@ Plus: Custom theme input
 
 ### Mock Fallbacks
 When API keys are missing, the app gracefully falls back to:
-- **Text**: 3 pre-written Spanish stories (rotate through them)
+- **Text**: 3 pre-written English stories (rotate through them)
 - **Images**: Theme-based Unsplash placeholder images
 
 This allows full testing of the UX without API credentials.
@@ -259,7 +259,7 @@ None! The app builds and runs successfully with mock fallbacks.
 2. **Constellation Visualization**: SVG lines connect chapters chronologically
 3. **Responsive Design**: Mobile-first, works on all screen sizes
 4. **Age-Aware AI**: Prompts adapt based on child's birth date
-5. **Rioplatense Spanish**: Authentic language for Argentina/Uruguay
+5. **English**: Authentic language for Argentina/Uruguay
 6. **Theme Persistence**: Child selection saved in localStorage
 7. **Real-time Status**: Chapter status tracking (generating/ready/failed)
 

@@ -17,7 +17,7 @@ Open [http://localhost:3000](http://localhost:3000)
 **You can now:**
 - ✅ Sign up with email/password
 - ✅ Create a child profile
-- ✅ Forge chapters (uses mock Spanish stories)
+- ✅ Forge chapters (uses mock English stories)
 - ✅ View The Hero's Book
 - ✅ Browse chapters with constellation view
 
@@ -119,7 +119,7 @@ Now chapters will be generated with real AI!
    - Wait ~5 seconds
 
 4. **View the Chapter**
-   - See the AI-generated Spanish story!
+   - See the AI-generated English story!
    - Note the tags and theme
    - Click share button to copy link
 

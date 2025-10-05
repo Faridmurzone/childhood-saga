@@ -53,7 +53,7 @@ AgeMonths: ${childAgeMonths || 36}${descriptionText}${contextDisclaimer}
 Write JSON only, using the child's name "${childName}" as the protagonist:
 {
   "title": "<short poetic title>",
-  "story": "<single-paragraph story in Spanish featuring ${childName}>",
+  "story": "<single-paragraph story in english featuring ${childName}>",
   "tags": ["<1-4 simple tags>"]
 }`
 
