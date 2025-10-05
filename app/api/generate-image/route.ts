@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
 
     // Enhanced prompt for toddler-friendly, colorful, whimsical illustrations
     const enhancedPrompt = avatarUrl
-      ? `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. USE THE PROVIDED REFERENCE IMAGE to depict the child character faithfully in the illustration. The character should match the appearance shown in the reference image. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children.`
-      : `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children.`
+      ? `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. USE THE PROVIDED REFERENCE IMAGE to depict the child character faithfully in the illustration. The character should match the appearance shown in the reference image. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children. Never put text in the image.`
+      : `Create a colorful, whimsical, child-friendly illustration for toddlers (ages 2-4) in the style of children's book art. Theme: ${theme}. ${prompt}. The image should be bright, cheerful, non-scary, with soft shapes and warm colors. Suitable for young children. Never put text in the image.`
 
     let contents: any[] = []
 

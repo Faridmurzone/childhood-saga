@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       prompt = `Create a cute, child-friendly cartoon avatar based on this photo.
 The avatar should be colorful, whimsical, and suitable for children's storybooks.
 Style: Digital illustration, soft colors, friendly and happy expression.
-If the photo is not of a child or person, create a random cute character based on the name "${childName}", age ${childAge}, and this description: ${description || 'a cheerful child'}.`
+If the photo is not of a child or person, create a random cute character based on the name "${childName}", age ${childAge}, use something from this description: ${description || 'a cheerful child'}.`
 
       contents = [
         {

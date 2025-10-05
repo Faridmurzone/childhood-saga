@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Build description if provided
     let descriptionText = ''
     if (childDescription) {
-      descriptionText = `\nChild Description: ${childDescription}`
+      descriptionText = `\nChild Description: ${childDescription}. Sometimes use something from the description in the story. But don't mention it explicitly.`
     }
 
     const userPrompt = `Seed: "${seedText}"
