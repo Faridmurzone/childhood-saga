@@ -1,28 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
-import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { adminStorage } from '@/lib/firestore'
 
 export const dynamic = 'force-dynamic'
-
-// Initialize Firebase Client SDK for storage uploads
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-}
-
-let app
-if (!getClientApps().length) {
-  app = initializeClientApp(firebaseConfig)
-} else {
-  app = getClientApps()[0]
-}
-
-const storage = getStorage(app)
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -137,15 +118,21 @@ export async function POST(request: NextRequest) {
       throw new Error('No image data received from Gemini')
     }
 
-    // Upload to Firebase Storage in user's folder: userId/genimg/
+    // Upload to Firebase Storage using Admin SDK
     const fileName = `${userId}/genimg/${Date.now()}-${Math.random().toString(36).substring(7)}.png`
-    const storageRef = ref(storage, fileName)
+    const bucket = adminStorage.bucket()
+    const file = bucket.file(fileName)
 
-    await uploadBytes(storageRef, imageBuffer, {
+    await file.save(imageBuffer, {
       contentType: 'image/png',
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: crypto.randomUUID(),
+        },
+      },
     })
 
-    const imageUrl = await getDownloadURL(storageRef)
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`
 
     return NextResponse.json({
       imageUrl,

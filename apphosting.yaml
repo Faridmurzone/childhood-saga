@@ -1,0 +1,64 @@
+# Settings for Cloud Run
+runConfig:
+  minInstances: 0
+  maxInstances: 1
+
+# Environment variables and secrets
+env:
+  # Firebase Client Configuration (Public) - Available in both BUILD and RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDAqu_gC5Xli7IRY76DH43oNPmsaZVTk7k"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "childhood-saga.firebaseapp.com"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "childhood-saga"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "childhood-saga.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "848700724231"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:848700724231:web:314b605cda3be2231bc6a2"
+    availability:
+      - BUILD
+      - RUNTIME
+  
+  # Environment
+  - variable: NODE_ENV
+    value: "production"
+    availability:
+      - BUILD
+      - RUNTIME
+  
+  # Secrets
+  - variable: ANTHROPIC_API_KEY
+    secret: projects/848700724231/secrets/anthropic-api-key/versions/latest
+    availability:
+    - BUILD
+    - RUNTIME
+
+  - variable: FIREBASE_SERVICE_ACCOUNT_KEY
+    secret: projects/848700724231/secrets/firebase-service-account/versions/latest
+    availability:
+      - BUILD
+      - RUNTIME
+  
+  - variable: GOOGLE_API_KEY
+    secret: projects/848700724231/secrets/google-api-key/versions/latest
+    availability:
+      - BUILD
+      - RUNTIME

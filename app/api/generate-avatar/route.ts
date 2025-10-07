@@ -1,28 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
-import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { adminStorage } from '@/lib/firestore'
 
 export const dynamic = 'force-dynamic'
-
-// Initialize Firebase Client SDK for storage uploads
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-}
-
-let app
-if (!getClientApps().length) {
-  app = initializeClientApp(firebaseConfig)
-} else {
-  app = getClientApps()[0]
-}
-
-const storage = getStorage(app)
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -130,8 +111,7 @@ Style: Colorful digital illustration, whimsical, suitable for children's storybo
       throw new Error('No image data received from Gemini')
     }
 
-    // Upload to Firebase Storage with timestamp to avoid overwriting
-    // Format: YYMMDDHHmmSS_childname_avatar.png
+    // Upload to Firebase Storage using Admin SDK
     const now = new Date()
     const timestamp = now.getFullYear().toString().slice(-2) +
       (now.getMonth() + 1).toString().padStart(2, '0') +
@@ -142,13 +122,19 @@ Style: Colorful digital illustration, whimsical, suitable for children's storybo
 
     const sanitizedName = childName.toLowerCase().replace(/[^a-z0-9]/g, '')
     const fileName = `${userId}/avatar/${timestamp}_${sanitizedName}_avatar.png`
-    const storageRef = ref(storage, fileName)
+    const bucket = adminStorage.bucket()
+    const file = bucket.file(fileName)
 
-    await uploadBytes(storageRef, imageBuffer, {
+    await file.save(imageBuffer, {
       contentType: 'image/png',
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: crypto.randomUUID(),
+        },
+      },
     })
 
-    const avatarUrl = await getDownloadURL(storageRef)
+    const avatarUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`
 
     return NextResponse.json({
       avatarUrl,
