@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
-import { adminStorage } from '@/lib/firestore'
+import * as admin from 'firebase-admin'
+import { getApps } from 'firebase-admin/app'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
+
+// Initialize Firebase Admin if not already initialized
+if (!getApps().length) {
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY && process.env.FIREBASE_SERVICE_ACCOUNT_KEY.trim()) {
+    try {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId,
+        storageBucket,
+      })
+    } catch (error) {
+      admin.initializeApp({ projectId, storageBucket })
+    }
+  } else {
+    admin.initializeApp({ projectId, storageBucket })
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -120,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Firebase Storage using Admin SDK
     const fileName = `${userId}/genimg/${Date.now()}-${Math.random().toString(36).substring(7)}.png`
-    const bucket = adminStorage.bucket()
+    const bucket = admin.storage().bucket()
     const file = bucket.file(fileName)
 
     await file.save(imageBuffer, {
