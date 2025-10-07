@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Upload, Info, Pen, Plus } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function ChildManagementPage() {
   const { user } = useAuth()
@@ -161,7 +162,7 @@ export default function ChildManagementPage() {
       }
     } catch (error) {
       console.error('Error saving child:', error)
-      alert('Failed to save child profile. Please try again.')
+      toast.error('Failed to save child profile. Please try again.')
     } finally {
       setSaving(false)
       setGeneratingAvatar(false)

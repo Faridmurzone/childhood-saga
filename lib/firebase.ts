@@ -44,7 +44,6 @@ if (typeof window !== 'undefined') {
     storage = getStorage(app)
   } catch (error) {
     console.error('Failed to initialize Firebase:', error)
-    console.error('Firebase Config:', firebaseConfig)
     throw error
   }
 }

@@ -19,6 +19,7 @@ export interface Child {
 }
 
 export type ChapterStatus = 'generating' | 'ready' | 'failed'
+export type ChapterVisibility = 'private' | 'public'
 
 export interface Chapter {
   id: string
@@ -36,6 +37,7 @@ export interface Chapter {
     image?: any
   }
   status: ChapterStatus
+  visibility?: ChapterVisibility
 }
 
 export interface CreateChapterInput {

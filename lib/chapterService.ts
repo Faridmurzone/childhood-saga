@@ -49,6 +49,7 @@ export async function createChapterWithAI(
       imageUrl: '',
       providerMeta: {},
       status: 'generating',
+      visibility: 'private',
     }
 
     const chapter = await createChapterClient(initialChapter)

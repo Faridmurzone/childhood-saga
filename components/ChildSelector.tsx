@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Textarea } from '@/components/ui/textarea'
 import { Upload, Info } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface ChildSelectorProps {
   onChildSelected: (child: Child) => void
@@ -139,7 +140,7 @@ export function ChildSelector({
       handleSelectChild(newChild)
     } catch (error) {
       console.error('Error creating child:', error)
-      alert('Failed to create child profile. Please try again.')
+      toast.error('Failed to create child profile. Please try again.')
     } finally {
       setSaving(false)
       setGeneratingAvatar(false)

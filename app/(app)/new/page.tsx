@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createChapterWithAI } from '@/lib/chapterService'
 import { ForgingLoader } from '@/components/ForgingLoader'
+import { toast } from 'sonner'
 
 export default function NewChapterPage() {
   const router = useRouter()
@@ -47,7 +48,7 @@ export default function NewChapterPage() {
       router.push(`/chapter/${chapter.id}`)
     } catch (error) {
       console.error('Error forging chapter:', error)
-      alert('Failed to forge chapter. Please try again.')
+      toast.error('Failed to forge chapter. Please try again.')
       setIsForging(false)
     }
   }

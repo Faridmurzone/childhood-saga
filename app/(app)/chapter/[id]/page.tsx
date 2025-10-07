@@ -14,6 +14,7 @@ import { Share2, Pen, X } from 'lucide-react'
 import { getThemeBackground } from '@/lib/themeBackgrounds'
 import { StoryText } from '@/components/StoryText'
 import { ChapterImage } from '@/components/ChapterImage'
+import { toast } from 'sonner'
 
 export default function ChapterDetailPage() {
   const params = useParams()
@@ -24,6 +25,8 @@ export default function ChapterDetailPage() {
   const [editTitle, setEditTitle] = useState('')
   const [editStory, setEditStory] = useState('')
   const [saving, setSaving] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [sharingPublic, setSharingPublic] = useState(false)
 
   useEffect(() => {
     loadChapter()
@@ -57,17 +60,92 @@ export default function ChapterDetailPage() {
   }
 
   const handleShare = () => {
+    setIsShareModalOpen(true)
+  }
+
+  const handleSharePublic = async () => {
+    if (!chapter) return
+
+    try {
+      setSharingPublic(true)
+
+      // Update chapter visibility to public
+      await updateChapterClient(chapter.id, {
+        visibility: 'public',
+      })
+
+      // Update local state
+      setChapter({
+        ...chapter,
+        visibility: 'public',
+      })
+
+      // Share the URL
+      const url = window.location.href
+      if (navigator.share) {
+        await navigator.share({
+          title: chapter.mythTitle,
+          text: `Check out this story: ${chapter.mythTitle}`,
+          url,
+        })
+      } else {
+        navigator.clipboard.writeText(url)
+        toast.success('Link copied to clipboard! This story is now public.')
+      }
+
+      setIsShareModalOpen(false)
+    } catch (error) {
+      console.error('Error sharing chapter:', error)
+      const url = window.location.href
+      navigator.clipboard.writeText(url)
+      toast.success('Link copied to clipboard! This story is now public.')
+    } finally {
+      setSharingPublic(false)
+    }
+  }
+
+  const handleMakePrivate = async () => {
+    if (!chapter) return
+
+    try {
+      setSharingPublic(true)
+
+      // Update chapter visibility to private
+      await updateChapterClient(chapter.id, {
+        visibility: 'private',
+      })
+
+      // Update local state
+      setChapter({
+        ...chapter,
+        visibility: 'private',
+      })
+
+      toast.success('This story is now private.')
+      setIsShareModalOpen(false)
+    } catch (error) {
+      console.error('Error making chapter private:', error)
+      toast.error('Failed to make chapter private. Please try again.')
+    } finally {
+      setSharingPublic(false)
+    }
+  }
+
+  const handleSharePrivate = () => {
+    if (!chapter) return
+
     const url = window.location.href
     if (navigator.share) {
       navigator.share({
-        title: chapter?.mythTitle,
-        text: `Check out this mythic chapter: ${chapter?.mythTitle}`,
+        title: chapter.mythTitle,
+        text: `Check out this story: ${chapter.mythTitle}`,
         url,
       })
     } else {
       navigator.clipboard.writeText(url)
-      alert('Link copied to clipboard!')
+      toast.success('Link copied to clipboard!')
     }
+    setIsShareModalOpen(false)
   }
 
   const handleEdit = () => {
@@ -98,7 +176,7 @@ export default function ChapterDetailPage() {
       setIsEditModalOpen(false)
     } catch (error) {
       console.error('Error updating chapter:', error)
-      alert('Failed to update chapter. Please try again.')
+      toast.error('Failed to update chapter. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -173,6 +251,65 @@ export default function ChapterDetailPage() {
         <p className="text-slate-friendly/70">Seed: &quot;{chapter.seedText}&quot;</p>
         <p className="mt-1 text-slate-friendly/70">Theme: {chapter.theme}</p>
       </div>
+
+      {/* Share Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Share Story</h2>
+                <button
+                  onClick={() => setIsShareModalOpen(false)}
+                  className="p-2 hover:bg-accent rounded-lg transition-colors"
+                  disabled={sharingPublic}
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <p className="text-slate-friendly/70">
+                {chapter?.visibility === 'public'
+                  ? 'This story is public. Anyone with the link can read it.'
+                  : 'Would you like to make this story public? Anyone with the link will be able to read it.'}
+              </p>
+
+              {chapter?.visibility === 'public' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-sm text-green-800">
+                    ✓ This story is currently public
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  onClick={chapter?.visibility === 'public' ? handleMakePrivate : handleSharePublic}
+                  disabled={sharingPublic}
+                  className="w-full"
+                  variant={chapter?.visibility === 'public' ? 'outline' : 'default'}
+                >
+                  {sharingPublic
+                    ? (chapter?.visibility === 'public' ? 'Making Private...' : 'Making Public...')
+                    : (chapter?.visibility === 'public' ? 'Make Private' : 'Make Public')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSharePrivate}
+                  disabled={sharingPublic}
+                  className="w-full"
+                >
+                  Share
+                </Button>
+              </div>
+
+              <p className="text-xs text-slate-friendly/60 text-center">
+                Public stories can be viewed by anyone with the link. 
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (
